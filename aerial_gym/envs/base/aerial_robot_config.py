@@ -40,7 +40,7 @@ class AerialRobotCfg(BaseConfig):
         scale_input = [1.0, 1.0, 1.0, 1.0] # scale the input to the controller from -1 to 1 for each dimension, scale from -np.pi to np.pi for yaw in the case of position control
 
     class robot_asset:
-        file = "{AERIAL_GYM_ROOT_DIR}/resources/robots/quad/model.urdf"
+        file = "{AERIAL_GYM_ROOT_DIR}/resources/robots/modular/modular_1.urdf"
         name = "aerial_robot"  # actor name
         base_link_name = "base_link"
         foot_name = "None" # name of the feet bodies, used to index body state and contact force tensors
