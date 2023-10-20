@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<robot name="modular_1">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White">
+        <color rgba="1 1 1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+  </link>
+  <link name="base_link_1">
+    <visual>
+      <origin xyz="0 0 0.0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White">
+        <color rgba="1 1 1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+  </link>
+  <link name="base_link_2">
+    <visual>
+      <origin xyz="0 0 0.0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White">
+        <color rgba="1 1 1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+  </link>
+  <link name="base_link_3">
+    <visual>
+      <origin xyz="0 0 0.0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White">
+        <color rgba="1 1 1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+  </link>
+  <link name="base_link_4">
+    <visual>
+      <origin xyz="0 0 0.0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White">
+        <color rgba="1 1 1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+  </link>
+  <link name="propeller_1">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange">
+        <color rgba="1 0.423 0.03921568627 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+  <link name="propeller_2">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange">
+        <color rgba="1.0 0.423 0.03921568627 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+  <link name="propeller_3">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Blue">
+        <color rgba="0 0 1 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+  <link name="propeller_4">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Blue">
+        <color rgba="0 0 1 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+  <joint name="base_joint_1" type="fixed" dont_collapse="true">    
+    <parent link="base_link"/>    
+    <child link="base_link_1"/>    
+    <origin xyz="0.113 0.113 0"/>  
+  </joint>
+  <joint name="base_joint_2" type="fixed" dont_collapse="true">    
+    <parent link="base_link"/>    
+    <child link="base_link_2"/>    
+    <origin xyz="0.113 -0.113 0"/>
+  </joint>
+  <joint name="base_joint_3" type="fixed" dont_collapse="true">    
+    <parent link="base_link"/>    
+    <child link="base_link_3"/>    
+    <origin xyz="-0.113 -0.113 0"/> 
+  </joint>
+  <joint name="base_joint_4" type="fixed" dont_collapse="true">    
+    <parent link="base_link"/>    
+    <child link="base_link_4"/>    
+    <origin xyz="-0.113 0.113 0"/> 
+  </joint>
+  <joint name="propeller_joint_1" type="fixed" dont_collapse="true">    
+    <parent link="base_link_1"/>    
+    <child link="propeller_1"/>    
+    <origin xyz="0 0 0"/>  
+  </joint>
+  <joint name="propeller_joint_2" type="fixed" dont_collapse="true">    
+    <parent link="base_link_2"/>    
+    <child link="propeller_2"/>    
+    <origin xyz="0 0 0"/>
+  </joint>
+  <joint name="propeller_joint_3" type="fixed" dont_collapse="true">    
+    <parent link="base_link_3"/>    
+    <child link="propeller_3"/>    
+    <origin xyz="0 0 0"/> 
+  </joint>
+  <joint name="propeller_joint_4" type="fixed" dont_collapse="true">    
+    <parent link="base_link_4"/>    
+    <child link="propeller_4"/>    
+    <origin xyz="0 0 0"/> 
+  </joint>
+</robot>
