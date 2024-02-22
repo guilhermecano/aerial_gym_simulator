@@ -1,92 +1,50 @@
 import random
-import pygraphviz as pgv
-from PIL import Image
-from pydantic import BaseModel
-from typing import List, Optional, Dict
-from enum import Enum
-from typing import Tuple
-from scipy.spatial.distance import cdist
-from aerial_gym import AERIAL_GYM_ROOT_DIR
-from urdfpy import URDF
-import matplotlib
-import matplotlib.pyplot as plt
+from typing import List, Tuple
+
 import numpy as np
+import torch
+from scipy.spatial.distance import cdist
+
 from aerial_gym.exceptions.common import InvalidArchitectureException
-
-from aerial_gym.utils.constants import MODULE_DEFAULT_RADIUS, MID_LEVEL_PROBABILITY
-
-
-class LevelEnum(Enum):
-    TOP = 1
-    MID = 2
-    BOTTOM = 3
-
-
-class ModuleTypeEnum(str, Enum):
-    BASE = "BASE"
-    CW_PROPELLER = "CW_PROPELLER"
-    CC_PROPELLER = "CC_PROPELLER"
-    PAYLOAD = "PAYLOAD"
+from aerial_gym.robot_generator.models.drone_modules import (
+    DroneConfig,
+    DroneConnection,
+    DroneModule,
+    LevelEnum,
+    ModuleTypeEnum,
+)
+from aerial_gym.utils.constants import MID_LEVEL_PROBABILITY
 
 
-class DroneConnection(BaseModel):
-    connector_1: Optional[int] = None
-    connector_2: Optional[int] = None
-    connector_3: Optional[int] = None
-    connector_4: Optional[int] = None
-    connector_5: Optional[int] = None
-    connector_6: Optional[int] = None
+def setup_edge_indexes(drone: DroneConfig) -> torch.Tensor:
+    """
+    Setup edge indexes and defines edge index for a representative graph of the drone
+    architecture. The edges are undirected.
 
-    def get_connector_value(self, i):
-        if i == 1:
-            return self.connector_1
-        elif i == 2:
-            return self.connector_2
-        elif i == 3:
-            return self.connector_3
-        elif i == 4:
-            return self.connector_4
-        elif i == 5:
-            return self.connector_5
-        elif i == 6:
-            return self.connector_6
-        else:
-            raise ValueError("Invalid connector index")
-
-    def set_connector_value(self, i, value):
-        if i == 1:
-            self.connector_1 = value
-        elif i == 2:
-            self.connector_2 = value
-        elif i == 3:
-            self.connector_3 = value
-        elif i == 4:
-            self.connector_4 = value
-        elif i == 5:
-            self.connector_5 = value
-        elif i == 6:
-            self.connector_6 = value
-        else:
-            raise ValueError("Invalid connector index")
-
-
-class DroneModule(BaseModel):
-    id: int
-    type: ModuleTypeEnum
-    connections: DroneConnection
-    radius: int = MODULE_DEFAULT_RADIUS
-    level: LevelEnum = LevelEnum.MID
-    position: Optional[Tuple[float, float]] = None
-
-
-class DroneConfig(BaseModel):
-    modules: List[DroneModule]
-    edge_index: List[List[int]]
-    num_modules: int
-    num_propellers: int
-    num_bases: int
-    num_nodes: int
-    allow_unevenness: bool
+    Parameters
+    ----------
+        drone: A DroneConfig object
+    Returns
+    -------
+        edge_indexes: torch tensor of edge indexes.
+    """
+    # setup edge indexes
+    edge_indexes = []
+    for module in drone.modules:
+        if module.connections.connector_1 is not None:
+            edge_indexes.append([module.id, module.connections.connector_1])
+        if module.connections.connector_2 is not None:
+            edge_indexes.append([module.id, module.connections.connector_2])
+        if module.connections.connector_3 is not None:
+            edge_indexes.append([module.id, module.connections.connector_3])
+        if module.connections.connector_4 is not None:
+            edge_indexes.append([module.id, module.connections.connector_4])
+        if module.connections.connector_5 is not None:
+            edge_indexes.append([module.id, module.connections.connector_5])
+        if module.connections.connector_6 is not None:
+            edge_indexes.append([module.id, module.connections.connector_6])
+    drone.edge_index = torch.tensor(edge_indexes).t().contiguous()
+    return drone
 
 
 def get_target_position(source_module, connector):
@@ -150,14 +108,14 @@ def check_free_space(source_module, connector, other_modules):
     for other_module in other_modules:
         # Compute the distance between the target position and the other module's position
         distance = cdist([target_position], [other_module.position], metric="euclidean")
-        if distance[0][0] < 2*other_module.radius:
+        if distance[0][0] < 2 * other_module.radius:
             return False
     return True
 
 
 def randomize_modules(source_module, module_list) -> List[int]:
     """
-    Randomize number of modules and return the number of modules and the connectors 
+    Randomize number of modules and return the number of modules and the connectors
     that they will be attached on.
     Args:
         source_module (DroneModule): The source module to be randomized.
@@ -179,14 +137,18 @@ def randomize_modules(source_module, module_list) -> List[int]:
     # sample allowed_modules from free_connectors
     connectors = np.random.choice(free_connectors, n_modules, replace=False)
     # check if there is no overlap
-    connectors = [c for c in connectors if check_free_space(source_module, c, module_list)]
-    print("-"*50)
+    connectors = [
+        c for c in connectors if check_free_space(source_module, c, module_list)
+    ]
+    print("-" * 50)
     print(source_module.id)
     print([c for c in connectors if check_free_space(source_module, c, module_list)])
     return connectors
 
 
-def create_module(id: int, num_bases: int, num_propellers: int, allow_unevenness: bool, **kwargs):
+def create_module(
+    id: int, num_bases: int, num_propellers: int, allow_unevenness: bool, **kwargs
+):
     """
     Creates a module with a randomized type and vertical alignment.
     Args:
@@ -252,17 +214,19 @@ def attach_module(
     source_module.connections.set_connector_value(source_connector, target_module.id)
     target_module.connections.set_connector_value(target_connector, source_module.id)
     target_module.position = get_target_position(source_module, source_connector)
-    print(f'Attaching module {target_module.id} into {source_module.id} at connector {source_connector}')
-    print(f"Source module position = {source_module.position}, and target module position = {target_module.position}")
+    print(
+        f"Attaching module {target_module.id} into {source_module.id} at connector {source_connector}"
+    )
+    print(
+        f"Source module position = {source_module.position}, and target module position = {target_module.position}"
+    )
     return source_module, target_module
 
 
 def generate_random_drone(
     num_propellers: int,
     num_bases: int = 1,
-    num_payloads: int = 0,
     allow_unevenness: bool = True,
-    symmetric: bool = False,
 ):
     if num_propellers < 3 or num_bases < 1:
         raise InvalidArchitectureException().create(num_propellers, num_bases)
@@ -281,21 +245,16 @@ def generate_random_drone(
     remaining_bases = np.clip(num_bases - 1, 0, None)
     remaining_propellers = num_propellers
     remaining_modules = remaining_bases + remaining_propellers
-    remaining_payloads = num_payloads
-    # TODO: Solve symmetry problem later
-    sym_remainer = 0
-    if symmetric:
-        sym_remainer = remaining_modules % 2
-        remaining_modules = remaining_modules // 2
+    # # TODO: Solve symmetry problem and num_payloads later
+    # remaining_payloads = num_payloads
+    # sym_remainer = 0
+    # if symmetric:
+    #     sym_remainer = remaining_modules % 2
+    #     remaining_modules = remaining_modules // 2
     module_id = 0
     source_id = 0
     visited_source_ids = [source_id]
     while remaining_modules > 0:
-        # print(f"Source ID: {source_id}")
-        # print(f"Len modules: {len(modules)}")
-        # print(f"remaining_propellers: {remaining_propellers}")
-        # print(f"remaining_bases: {remaining_bases}")
-        # print(f"remaining_modules: {remaining_modules}")
         chosen_connectors = randomize_modules(modules[source_id], modules)
         print(f"chosen_connectors: {chosen_connectors}")
         for conn in chosen_connectors:
@@ -305,7 +264,7 @@ def generate_random_drone(
                 num_bases=remaining_bases,
                 num_propellers=remaining_propellers,
                 connections=DroneConnection(),
-                allow_unevenness=allow_unevenness
+                allow_unevenness=allow_unevenness,
             )
             source_module, target_module = attach_module(
                 source_module=modules[source_id],
@@ -327,9 +286,8 @@ def generate_random_drone(
                 break
         not_visited = list(set([m.id for m in modules]) - set(visited_source_ids))
         source_id = np.random.choice(not_visited, 1, False)[0]
-    for md in modules:
-        print(md.position)
-    return DroneConfig(
+
+    drone = DroneConfig(
         modules=modules,
         edge_index=[],
         num_modules=len(modules),
@@ -338,39 +296,5 @@ def generate_random_drone(
         num_nodes=len(modules),
         allow_unevenness=allow_unevenness,
     )
-
-
-
-# drone = generate_random_drone(num_propellers=4, num_bases=1, num_payloads=0, allow_unevenness=False)
-
-# fig, ax = plt.subplots(figsize=(14, 11))
-
-# print("---------------- plotting -----------------")
-# for module in drone.modules:
-#     circle_id = module.id
-#     radius = module.radius
-#     x = module.position[0]
-#     y = module.position[1]
-#     print(f"({x}, {y})")
-#     circle_type = module.type
-
-#     # Set circle color based on circle_type
-#     color = 'blue' if circle_type == ModuleTypeEnum.BASE else 'green'
-
-#     # Plot the circle
-#     circle_plot = plt.Circle((x, y), radius, edgecolor='black', facecolor=color, alpha=0.7)
-#     ax.add_patch(circle_plot)
-
-#     # Add text inside the circle with the circle_id
-#     ax.text(x, y, str(circle_id) + f"_{module.level.name}", color='white', ha='center', va='center', fontweight='bold')
-
-# # Set aspect ratio to 'equal' for a more accurate representation of circles
-# ax.set_aspect('equal', adjustable='box')
-
-# plt.xlabel('X-axis')
-# plt.ylabel('Y-axis')
-# plt.ylim(-1, 1)
-# plt.xlim(-1, 1)
-# plt.title('Indexed Circles')
-
-# plt.show()
+    drone = setup_edge_indexes(drone)
+    return drone
