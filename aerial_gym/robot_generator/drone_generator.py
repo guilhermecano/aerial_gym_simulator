@@ -2,9 +2,10 @@ import random
 from typing import List, Tuple
 
 import numpy as np
-import torch
 from scipy.spatial.distance import cdist
 
+import isaacgym
+import logging
 from aerial_gym.exceptions.common import InvalidArchitectureException
 from aerial_gym.robot_generator.models.drone_modules import (
     DroneConfig,
@@ -14,6 +15,7 @@ from aerial_gym.robot_generator.models.drone_modules import (
     ModuleTypeEnum,
 )
 from aerial_gym.utils.constants import MID_LEVEL_PROBABILITY
+import torch
 
 
 def setup_edge_indexes(drone: DroneConfig) -> torch.Tensor:
@@ -140,9 +142,6 @@ def randomize_modules(source_module, module_list) -> List[int]:
     connectors = [
         c for c in connectors if check_free_space(source_module, c, module_list)
     ]
-    print("-" * 50)
-    print(source_module.id)
-    print([c for c in connectors if check_free_space(source_module, c, module_list)])
     return connectors
 
 
@@ -214,10 +213,10 @@ def attach_module(
     source_module.connections.set_connector_value(source_connector, target_module.id)
     target_module.connections.set_connector_value(target_connector, source_module.id)
     target_module.position = get_target_position(source_module, source_connector)
-    print(
+    logging.debug(
         f"Attaching module {target_module.id} into {source_module.id} at connector {source_connector}"
     )
-    print(
+    logging.debug(
         f"Source module position = {source_module.position}, and target module position = {target_module.position}"
     )
     return source_module, target_module
