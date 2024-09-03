@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 
 from pydantic import BaseModel
 
-from aerial_gym.utils.constants import MODULE_DEFAULT_RADIUS
+from aerial_gym.utils.constants import BASE_DEFAULT_RADIUS
 
 
 class LevelEnum(Enum):
@@ -64,7 +64,7 @@ class DroneModule(BaseModel):
     id: int
     type: ModuleTypeEnum
     connections: DroneConnection
-    radius: int = MODULE_DEFAULT_RADIUS
+    radius: int = BASE_DEFAULT_RADIUS
     level: LevelEnum = LevelEnum.MID
     position: Optional[Tuple[float, float]] = None
 

@@ -1,11 +1,10 @@
+import logging
 import random
 from typing import List, Tuple
 
 import numpy as np
 from scipy.spatial.distance import cdist
 
-import isaacgym
-import logging
 from aerial_gym.exceptions.common import InvalidArchitectureException
 from aerial_gym.robot_generator.models.drone_modules import (
     DroneConfig,
@@ -14,7 +13,12 @@ from aerial_gym.robot_generator.models.drone_modules import (
     LevelEnum,
     ModuleTypeEnum,
 )
+from aerial_gym.utils.constants import (
+    BASE_DEFAULT_LENGTH,
+    PROPELLER_DEFAULT_LENGTH,
+)
 from aerial_gym.utils.constants import MID_LEVEL_PROBABILITY
+from aerial_gym.robot_generator.drone_to_urdf import dronecfg_to_urdf
 import torch
 
 
@@ -255,7 +259,6 @@ def generate_random_drone(
     visited_source_ids = [source_id]
     while remaining_modules > 0:
         chosen_connectors = randomize_modules(modules[source_id], modules)
-        print(f"chosen_connectors: {chosen_connectors}")
         for conn in chosen_connectors:
             module_id += 1
             new_module = create_module(
@@ -297,3 +300,27 @@ def generate_random_drone(
     )
     drone = setup_edge_indexes(drone)
     return drone
+
+
+def generate_modular_drone_urdf(
+    name: str,
+    num_propellers: int,
+    num_bases: int = 1,
+    allow_unevenness: bool = True,
+    base_length: float = BASE_DEFAULT_LENGTH,
+    propeller_length: float = PROPELLER_DEFAULT_LENGTH,
+):
+    """Generates a modular drone URDF."""
+    # Generate randomized drone
+    drone_cfg = generate_random_drone(
+        num_propellers=num_propellers,
+        num_bases=num_bases,
+        allow_unevenness=allow_unevenness,
+    )
+    # Convert it to URDFPy
+    return dronecfg_to_urdf(
+        name=name,
+        drone=drone_cfg,
+        base_length=base_length,
+        propeller_length=propeller_length,
+    )
