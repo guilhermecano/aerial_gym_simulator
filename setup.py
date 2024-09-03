@@ -13,5 +13,7 @@ setup(
                       'matplotlib',
                       'numpy',
                       'torch',
-                      'pytorch3d']
+                      'pytorch3d',
+                      'pydantic',
+                      ]
 )

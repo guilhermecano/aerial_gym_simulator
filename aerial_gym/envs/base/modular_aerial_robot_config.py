@@ -9,7 +9,7 @@ from .base_config import BaseConfig
 import numpy as np
 from aerial_gym import AERIAL_GYM_ROOT_DIR
 
-class AerialRobotCfg(BaseConfig):
+class ModularAerialRobotCfg(BaseConfig):
     seed = 1
     class env:
         num_envs = 65536
