@@ -1,0 +1,18 @@
+sim:
+  device: "cuda:0"
+  dt: 0.01
+  substeps: 1
+
+env:
+  num_envs: 4096
+  env_spacing: 5.0
+
+control:
+  control_frequency_inv: 1
+
+viewer:
+  pos: [10, 0, 6]
+  lookat: [0, 0, 0]
+
+robot_asset:
+  collision_mask: 1
