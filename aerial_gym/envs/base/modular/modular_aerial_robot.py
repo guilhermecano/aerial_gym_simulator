@@ -16,19 +16,28 @@ from aerial_gym import AERIAL_GYM_ROOT_DIR, AERIAL_GYM_ROOT_DIR
 from isaacgym import gymutil, gymtorch, gymapi
 from isaacgym.torch_utils import *
 from aerial_gym.envs.base.base_task import BaseTask
-from .aerial_robot_config import AerialRobotCfg
+from aerial_gym.envs.base.modular.config_manager import DroneConfigManager
+from aerial_gym.envs.base.modular.simulation_config import SimulationCfg
 from aerial_gym.envs.controllers.controller import Controller
 
 import matplotlib.pyplot as plt
 from aerial_gym.utils.helpers import asset_class_to_AssetOptions
 import time
 
+
 class ModularAerialRobot(BaseTask):
 
-    def __init__(self, cfg: AerialRobotCfg, sim_params, physics_engine, sim_device, headless):
-        self.cfg = cfg
+    def __init__(self, 
+                 sim_cfg,
+                 cfg_manager,
+                 sim_params, 
+                 physics_engine, 
+                 sim_device, 
+                 headless):
+        self.sim_cfg = sim_cfg
+        self.cfg_manager = cfg_manager
 
-        self.max_episode_length = int(self.cfg.env.episode_length_s / self.cfg.sim.dt)
+        self.max_episode_length = int(self.sim_cfg.env.episode_length_s / self.sim_cfg.sim.dt)
         self.debug_viz = False
         num_actors = 1
 
@@ -37,7 +46,7 @@ class ModularAerialRobot(BaseTask):
         self.sim_device_id = sim_device
         self.headless = headless
 
-        super().__init__(self.cfg, sim_params, physics_engine, sim_device, headless)
+        super().__init__(self.sim_cfg, sim_params, physics_engine, sim_device, headless)
         self.root_tensor = self.gym.acquire_actor_root_state_tensor(self.sim)
 
         bodies_per_env = self.robot_num_bodies
@@ -63,14 +72,20 @@ class ModularAerialRobot(BaseTask):
         self.initial_root_states = self.root_states.clone()
         self.counter = 0
 
+        # get batch of drone configs with config manager
+        base_config_path = "/home/guilherme/phd/aerial_gym_simulator/aerial_gym/envs/base/modular/base_config.yml"
+        urdf_dir = '/home/guilherme/phd/aerial_gym_simulator/resources/robots/modular/training'
+        self.config_manager = DroneConfigManager(urdf_dir, base_config_path, batch_size=self.num_envs)
+        self.drone_configs = self.cfg_manager.get_drone_configs()
+        self.max_action_space = 8
+        # action limits
         self.action_upper_limits = torch.tensor(
-            [1, 1, 1, 1], device=self.device, dtype=torch.float32)
+            [1]*self.max_action_space, device=self.device, dtype=torch.float32)
         self.action_lower_limits = torch.tensor(
-            [-1, -1, -1, -1], device=self.device, dtype=torch.float32)
-
+            [-1]*self.max_action_space, device=self.device, dtype=torch.float32)
         # control tensors
         self.action_input = torch.zeros(
-            (self.num_envs, 4), dtype=torch.float32, device=self.device, requires_grad=False)
+            (self.num_envs, self.max_action_space), dtype=torch.float32, device=self.device, requires_grad=False)
         self.forces = torch.zeros((self.num_envs, bodies_per_env, 3),
                                   dtype=torch.float32, device=self.device, requires_grad=False)
         self.torques = torch.zeros((self.num_envs, bodies_per_env, 3),
@@ -92,13 +107,69 @@ class ModularAerialRobot(BaseTask):
             self.sim_device_id, self.graphics_device_id, self.physics_engine, self.sim_params)
         self._create_envs()
         self.progress_buf = torch.zeros(
-            self.cfg.env.num_envs, device=self.sim_device, dtype=torch.long)
+            self.sim_cfg.env.num_envs, device=self.sim_device, dtype=torch.long)
 
     def _create_ground_plane(self):
         plane_params = gymapi.PlaneParams()
         plane_params.normal = gymapi.Vec3(0.0, 0.0, 1.0)
         self.gym.add_ground(self.sim, plane_params)
         return
+
+    def _create_envs(self):
+        print("\n\n\n\n\n CREATING ENVIRONMENTS \n\n\n\n\n\n")
+        for custom_env in self.drone_configs:
+            asset_path = custom_env.robot_asset.file
+            asset_root = os.path.dirname(asset_path)
+            asset_file = os.path.basename(asset_path)
+
+            asset_options = asset_class_to_AssetOptions(self.cfg.robot_asset)
+            continue
+
+        
+        pass
+            
+        # asset_root = os.path.dirname(asset_path)
+        # asset_file = os.path.basename(asset_path)
+
+        # asset_options = asset_class_to_AssetOptions(self.cfg.robot_asset)
+
+        # robot_asset = self.gym.load_asset(
+        #     self.sim, asset_root, asset_file, asset_options)
+
+        # self.robot_num_bodies = self.gym.get_asset_rigid_body_count(robot_asset)
+
+        # start_pose = gymapi.Transform()
+        # self.env_spacing = self.cfg.env.env_spacing
+        # env_lower = gymapi.Vec3(-self.env_spacing, -
+        #                         self.env_spacing, -self.env_spacing)
+        # env_upper = gymapi.Vec3(
+        #     self.env_spacing, self.env_spacing, self.env_spacing)
+        # self.actor_handles = []
+        # self.envs = []
+        # for i in range(self.num_envs):
+        #     # create env instance
+        #     env_handle = self.gym.create_env(
+        #         self.sim, env_lower, env_upper, int(np.sqrt(self.num_envs)))
+        #     pos = torch.tensor([0, 0, 0], device=self.device)
+        #     start_pose.p = gymapi.Vec3(*pos)
+
+        #     actor_handle = self.gym.create_actor(
+        #         env_handle, robot_asset, start_pose, self.cfg.robot_asset.name, i, self.cfg.robot_asset.collision_mask, 0)
+            
+        #     pos = torch.tensor([2, 0, 0], device=self.device)
+        #     wall_pose = gymapi.Transform()
+        #     wall_pose.p = gymapi.Vec3(*pos)
+        #     self.robot_body_props = self.gym.get_actor_rigid_body_properties(
+        #         env_handle, actor_handle)
+        #     self.envs.append(env_handle)
+        #     self.actor_handles.append(actor_handle)
+        
+        # self.robot_mass = 0
+        # for prop in self.robot_body_props:
+        #     self.robot_mass += prop.mass
+        # print("Total robot mass: ", self.robot_mass)
+        
+        # print("\n\n\n\n\n ENVIRONMENT CREATED \n\n\n\n\n\n")
 
     def _create_envs(self):
         print("\n\n\n\n\n CREATING ENVIRONMENT \n\n\n\n\n\n")
@@ -149,7 +220,7 @@ class ModularAerialRobot(BaseTask):
 
     def step(self, actions):
         # step physics and render each frame
-        for i in range(self.cfg.env.num_control_steps_per_env_step):
+        for i in range(self.sim_cfg.env.num_control_steps_per_env_step):
             self.pre_physics_step(actions)
             self.gym.simulate(self.sim)
             # NOTE: as per the isaacgym docs, self.gym.fetch_results must be called after self.gym.simulate, but not having it here seems to work fine
