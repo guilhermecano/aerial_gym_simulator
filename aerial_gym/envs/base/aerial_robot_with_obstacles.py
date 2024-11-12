@@ -7,7 +7,6 @@
 import math
 import numpy as np
 import os
-import torch
 import sys
 
 
@@ -15,6 +14,7 @@ from aerial_gym import AERIAL_GYM_ROOT_DIR, AERIAL_GYM_ROOT_DIR
 
 from isaacgym import gymutil, gymtorch, gymapi
 from isaacgym.torch_utils import *
+import torch
 
 from aerial_gym.envs.base.base_task import BaseTask
 from .aerial_robot_with_obstacles_config import AerialRobotWithObstaclesCfg

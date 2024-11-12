@@ -7,7 +7,6 @@
 import math
 import numpy as np
 import os
-import torch
 import xml.etree.ElementTree as ET
 
 
@@ -23,6 +22,7 @@ from aerial_gym.envs.controllers.controller import Controller
 import matplotlib.pyplot as plt
 from aerial_gym.utils.helpers import asset_class_to_AssetOptions
 import time
+import torch
 
 
 class ModularAerialRobot(BaseTask):
@@ -117,92 +117,29 @@ class ModularAerialRobot(BaseTask):
 
     def _create_envs(self):
         print("\n\n\n\n\n CREATING ENVIRONMENTS \n\n\n\n\n\n")
-        for custom_env in self.drone_configs:
-            asset_path = custom_env.robot_asset.file
-            asset_root = os.path.dirname(asset_path)
-            asset_file = os.path.basename(asset_path)
-
-            asset_options = asset_class_to_AssetOptions(self.cfg.robot_asset)
-            continue
-
-        
-        pass
-            
-        # asset_root = os.path.dirname(asset_path)
-        # asset_file = os.path.basename(asset_path)
-
-        # asset_options = asset_class_to_AssetOptions(self.cfg.robot_asset)
-
-        # robot_asset = self.gym.load_asset(
-        #     self.sim, asset_root, asset_file, asset_options)
-
-        # self.robot_num_bodies = self.gym.get_asset_rigid_body_count(robot_asset)
-
-        # start_pose = gymapi.Transform()
-        # self.env_spacing = self.cfg.env.env_spacing
-        # env_lower = gymapi.Vec3(-self.env_spacing, -
-        #                         self.env_spacing, -self.env_spacing)
-        # env_upper = gymapi.Vec3(
-        #     self.env_spacing, self.env_spacing, self.env_spacing)
-        # self.actor_handles = []
-        # self.envs = []
-        # for i in range(self.num_envs):
-        #     # create env instance
-        #     env_handle = self.gym.create_env(
-        #         self.sim, env_lower, env_upper, int(np.sqrt(self.num_envs)))
-        #     pos = torch.tensor([0, 0, 0], device=self.device)
-        #     start_pose.p = gymapi.Vec3(*pos)
-
-        #     actor_handle = self.gym.create_actor(
-        #         env_handle, robot_asset, start_pose, self.cfg.robot_asset.name, i, self.cfg.robot_asset.collision_mask, 0)
-            
-        #     pos = torch.tensor([2, 0, 0], device=self.device)
-        #     wall_pose = gymapi.Transform()
-        #     wall_pose.p = gymapi.Vec3(*pos)
-        #     self.robot_body_props = self.gym.get_actor_rigid_body_properties(
-        #         env_handle, actor_handle)
-        #     self.envs.append(env_handle)
-        #     self.actor_handles.append(actor_handle)
-        
-        # self.robot_mass = 0
-        # for prop in self.robot_body_props:
-        #     self.robot_mass += prop.mass
-        # print("Total robot mass: ", self.robot_mass)
-        
-        # print("\n\n\n\n\n ENVIRONMENT CREATED \n\n\n\n\n\n")
-
-    def _create_envs(self):
-        print("\n\n\n\n\n CREATING ENVIRONMENT \n\n\n\n\n\n")
-        asset_path = self.cfg.robot_asset.file.format(
-            AERIAL_GYM_ROOT_DIR=AERIAL_GYM_ROOT_DIR)
-        asset_root = os.path.dirname(asset_path)
-        asset_file = os.path.basename(asset_path)
-
-        asset_options = asset_class_to_AssetOptions(self.cfg.robot_asset)
-
-        robot_asset = self.gym.load_asset(
-            self.sim, asset_root, asset_file, asset_options)
-
-        self.robot_num_bodies = self.gym.get_asset_rigid_body_count(robot_asset)
-
         start_pose = gymapi.Transform()
-        self.env_spacing = self.cfg.env.env_spacing
+        self.env_spacing = self.sim_cfg.env.env_spacing
         env_lower = gymapi.Vec3(-self.env_spacing, -
                                 self.env_spacing, -self.env_spacing)
         env_upper = gymapi.Vec3(
             self.env_spacing, self.env_spacing, self.env_spacing)
         self.actor_handles = []
-        self.envs = []
-        for i in range(self.num_envs):
-            # create env instance
+        # self.envs = []e
+        self.robot_mass = np.zeros(len(self.drone_configs))
+        for i, custom_env in enumerate(self.drone_configs):
+            asset_path = custom_env.robot_asset.file
+            asset_root = os.path.dirname(asset_path)
+            asset_file = os.path.basename(asset_path)
+            asset_options = asset_class_to_AssetOptions(custom_env.robot_asset)
+            robot_asset = self.gym.load_asset(
+                self.sim, asset_root, asset_file, asset_options)
+            self.robot_num_bodies = self.gym.get_asset_rigid_body_count(robot_asset)
             env_handle = self.gym.create_env(
                 self.sim, env_lower, env_upper, int(np.sqrt(self.num_envs)))
             pos = torch.tensor([0, 0, 0], device=self.device)
             start_pose.p = gymapi.Vec3(*pos)
-
             actor_handle = self.gym.create_actor(
-                env_handle, robot_asset, start_pose, self.cfg.robot_asset.name, i, self.cfg.robot_asset.collision_mask, 0)
-            
+                env_handle, robot_asset, start_pose, custom_env.robot_asset.name, i, custom_env.robot_asset.collision_mask, 0)
             pos = torch.tensor([2, 0, 0], device=self.device)
             wall_pose = gymapi.Transform()
             wall_pose.p = gymapi.Vec3(*pos)
@@ -210,13 +147,8 @@ class ModularAerialRobot(BaseTask):
                 env_handle, actor_handle)
             self.envs.append(env_handle)
             self.actor_handles.append(actor_handle)
-        
-        self.robot_mass = 0
-        for prop in self.robot_body_props:
-            self.robot_mass += prop.mass
-        print("Total robot mass: ", self.robot_mass)
-        
-        print("\n\n\n\n\n ENVIRONMENT CREATED \n\n\n\n\n\n")
+            for prop in self.robot_body_props:
+                self.robot_mass[i] += prop.mass
 
     def step(self, actions):
         # step physics and render each frame
@@ -274,7 +206,7 @@ class ModularAerialRobot(BaseTask):
         self.torques[:, :] = 0.0
 
         output_thrusts_mass_normalized, output_torques_inertia_normalized = self.controller(self.root_states, self.action_input)
-        self.forces[:, 0, 2] = self.robot_mass * (-self.sim_params.gravity.z) * output_thrusts_mass_normalized
+        self.forces[:, 0, 2] = self.robot_mass.reshape([-1, 1, 1]) * (-self.sim_params.gravity.z) * output_thrusts_mass_normalized
         self.torques[:, 0] = output_torques_inertia_normalized
         self.forces = torch.where(self.forces < 0, torch.zeros_like(self.forces), self.forces)
 

@@ -3,19 +3,15 @@
 
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
+from aerial_gym.envs.base.modular.config_manager import DroneConfigManager
 
-from .base_config import BaseConfig
+class ModularAerialRobotConfig():
+    config_manager: DroneConfigManager
 
-import numpy as np
-from aerial_gym import AERIAL_GYM_ROOT_DIR
-
-class ModularAerialRobotCfg(BaseConfig):
-    seed = 1
     class env:
         num_envs = 65536
         num_observations = 13
         get_privileged_obs = False # if True the states of all entitites in the environment will be returned as privileged observations, otherwise None will be returned
-        num_actions = 4
         env_spacing = 1
         episode_length_s = 8 # episode length in seconds
         num_control_steps_per_env_step = 1 # number of physics steps per env step
@@ -40,16 +36,11 @@ class ModularAerialRobotCfg(BaseConfig):
         scale_input = [1.0, 1.0, 1.0, 1.0] # scale the input to the controller from -1 to 1 for each dimension, scale from -np.pi to np.pi for yaw in the case of position control
 
     class robot_asset:
-        file = "{AERIAL_GYM_ROOT_DIR}/resources/robots/quad/model.urdf"
-        name = "aerial_robot"  # actor name
-        base_link_name = "base_link"
-        foot_name = "None" # name of the feet bodies, used to index body state and contact force tensors
-        penalize_contacts_on = []
-        terminate_after_contacts_on = []
+        base_link_name = "base_link_0"
         disable_gravity = False
-        collapse_fixed_joints = True # merge bodies connected by fixed joints. Specific fixed joints can be kept by adding " <... dont_collapse="true">
+        collapse_fixed_joints = True # merge bodies connected by fixed joints.
         fix_base_link = False # fix the base of the robot
-        collision_mask = 1 # 1 to disable, 0 to enable...bitwise filter
+        collision_mask = 0 # 1 to disable, 0 to enable...bitwise filter
         replace_cylinder_with_capsule = False # replace collision cylinders with capsules, leads to faster/more stable simulation
         flip_visual_attachments = True # Some .obj meshes must be flipped from y-up to z-up
         density = 0.001

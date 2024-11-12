@@ -4,10 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-from ..base_config import BaseConfig
 
-
-class SimulationCfg(BaseConfig):
+class SimulationCfg():
     seed = 1
     class env:
         num_envs = 65536

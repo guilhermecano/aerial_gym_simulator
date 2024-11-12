@@ -7,7 +7,6 @@
 import math
 import numpy as np
 import os
-import torch
 import xml.etree.ElementTree as ET
 
 
@@ -18,6 +17,7 @@ from isaacgym.torch_utils import *
 from aerial_gym.envs.base.base_task import BaseTask
 from .aerial_robot_config import AerialRobotCfg
 from aerial_gym.envs.controllers.controller import Controller
+import torch
 
 import matplotlib.pyplot as plt
 from aerial_gym.utils.helpers import asset_class_to_AssetOptions
