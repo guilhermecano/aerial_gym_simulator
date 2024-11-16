@@ -7,8 +7,7 @@
 from aerial_gym.envs.base.aerial_robot_config import AerialRobotCfg
 from aerial_gym.envs.base.aerial_robot_with_obstacles_config import AerialRobotWithObstaclesCfg
 from aerial_gym.envs.base.modular.modular_aerial_robot import ModularAerialRobot
-from aerial_gym.envs.base.modular.config_manager import DroneConfigManager
-from aerial_gym.envs.base.modular.simulation_config import SimulationCfg
+from aerial_gym.envs.base.modular.modular_aerial_robot_config import ModularAerialRobotConfig
 from .base.aerial_robot  import AerialRobot
 from .base.aerial_robot_with_obstacles import AerialRobotWithObstacles
 
@@ -18,4 +17,4 @@ from aerial_gym.utils.task_registry import task_registry
 
 task_registry.register( "quad", AerialRobot, AerialRobotCfg())
 task_registry.register("quad_with_obstacles", AerialRobotWithObstacles, AerialRobotWithObstaclesCfg())
-# task_registry.register("modular_random", ModularAerialRobot, )
+task_registry.register("modular", ModularAerialRobot, ModularAerialRobotConfig)

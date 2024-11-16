@@ -23,6 +23,7 @@ def sample_command(args):
     command_actions[:, 2] = 0.0
     command_actions[:, 3] = 0.8
 
+
     env.reset()
     for i in range(0, 50000):
         obs, priviliged_obs, rewards, resets, extras = env.step(command_actions)

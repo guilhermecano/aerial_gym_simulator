@@ -10,7 +10,7 @@ import os
 import xml.etree.ElementTree as ET
 
 
-from aerial_gym import AERIAL_GYM_ROOT_DIR, AERIAL_GYM_ROOT_DIR
+from aerial_gym import AERIAL_GYM_ROOT_DIR
 
 from isaacgym import gymutil, gymtorch, gymapi
 from isaacgym.torch_utils import *
@@ -18,6 +18,7 @@ from aerial_gym.envs.base.base_task import BaseTask
 from aerial_gym.envs.base.modular.config_manager import DroneConfigManager
 from aerial_gym.envs.base.modular.simulation_config import SimulationCfg
 from aerial_gym.envs.controllers.controller import Controller
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 from aerial_gym.utils.helpers import asset_class_to_AssetOptions
@@ -27,17 +28,19 @@ import torch
 
 class ModularAerialRobot(BaseTask):
 
-    def __init__(self, 
-                 sim_cfg,
-                 cfg_manager,
-                 sim_params, 
-                 physics_engine, 
-                 sim_device, 
+    def __init__(self,
+                 cfg,
+                 sim_params,
+                 physics_engine,
+                 sim_device,
                  headless):
-        self.sim_cfg = sim_cfg
-        self.cfg_manager = cfg_manager
+        self.cfg = cfg
+        self.cfg_manager = DroneConfigManager(
+            urdf_dir=Path(AERIAL_GYM_ROOT_DIR)/"../resources/robots/modular/training",
+            batch_size=self.num_envs
+        )
 
-        self.max_episode_length = int(self.sim_cfg.env.episode_length_s / self.sim_cfg.sim.dt)
+        self.max_episode_length = int(self.cfg.env.episode_length_s / self.cfg.sim.dt)
         self.debug_viz = False
         num_actors = 1
 
@@ -46,7 +49,7 @@ class ModularAerialRobot(BaseTask):
         self.sim_device_id = sim_device
         self.headless = headless
 
-        super().__init__(self.sim_cfg, sim_params, physics_engine, sim_device, headless)
+        super().__init__(self.cfg, sim_params, physics_engine, sim_device, headless)
         self.root_tensor = self.gym.acquire_actor_root_state_tensor(self.sim)
 
         bodies_per_env = self.robot_num_bodies
@@ -107,7 +110,7 @@ class ModularAerialRobot(BaseTask):
             self.sim_device_id, self.graphics_device_id, self.physics_engine, self.sim_params)
         self._create_envs()
         self.progress_buf = torch.zeros(
-            self.sim_cfg.env.num_envs, device=self.sim_device, dtype=torch.long)
+            self.cfg.env.num_envs, device=self.sim_device, dtype=torch.long)
 
     def _create_ground_plane(self):
         plane_params = gymapi.PlaneParams()
@@ -118,7 +121,7 @@ class ModularAerialRobot(BaseTask):
     def _create_envs(self):
         print("\n\n\n\n\n CREATING ENVIRONMENTS \n\n\n\n\n\n")
         start_pose = gymapi.Transform()
-        self.env_spacing = self.sim_cfg.env.env_spacing
+        self.env_spacing = self.cfg.env.env_spacing
         env_lower = gymapi.Vec3(-self.env_spacing, -
                                 self.env_spacing, -self.env_spacing)
         env_upper = gymapi.Vec3(
@@ -152,7 +155,7 @@ class ModularAerialRobot(BaseTask):
 
     def step(self, actions):
         # step physics and render each frame
-        for i in range(self.sim_cfg.env.num_control_steps_per_env_step):
+        for i in range(self.cfg.env.num_control_steps_per_env_step):
             self.pre_physics_step(actions)
             self.gym.simulate(self.sim)
             # NOTE: as per the isaacgym docs, self.gym.fetch_results must be called after self.gym.simulate, but not having it here seems to work fine

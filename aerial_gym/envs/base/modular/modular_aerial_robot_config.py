@@ -3,13 +3,12 @@
 
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
-from aerial_gym.envs.base.modular.config_manager import DroneConfigManager
+
 
 class ModularAerialRobotConfig():
-    config_manager: DroneConfigManager
 
     class env:
-        num_envs = 65536
+        num_envs = 300
         num_observations = 13
         get_privileged_obs = False # if True the states of all entitites in the environment will be returned as privileged observations, otherwise None will be returned
         env_spacing = 1
