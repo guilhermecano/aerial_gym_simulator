@@ -6,9 +6,11 @@
 
 
 class ModularAerialRobotConfig():
+    seed=1
 
     class env:
         num_envs = 300
+        num_actions = 8
         num_observations = 13
         get_privileged_obs = False # if True the states of all entitites in the environment will be returned as privileged observations, otherwise None will be returned
         env_spacing = 1

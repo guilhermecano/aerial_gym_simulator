@@ -9,7 +9,6 @@ import numpy as np
 import os
 import xml.etree.ElementTree as ET
 
-
 from aerial_gym import AERIAL_GYM_ROOT_DIR
 
 from isaacgym import gymutil, gymtorch, gymapi
@@ -35,10 +34,6 @@ class ModularAerialRobot(BaseTask):
                  sim_device,
                  headless):
         self.cfg = cfg
-        self.cfg_manager = DroneConfigManager(
-            urdf_dir=Path(AERIAL_GYM_ROOT_DIR)/"../resources/robots/modular/training",
-            batch_size=self.num_envs
-        )
 
         self.max_episode_length = int(self.cfg.env.episode_length_s / self.cfg.sim.dt)
         self.debug_viz = False
@@ -48,7 +43,12 @@ class ModularAerialRobot(BaseTask):
         self.physics_engine = physics_engine
         self.sim_device_id = sim_device
         self.headless = headless
-
+        self.num_envs = self.cfg.env.num_envs
+        self.cfg_manager = DroneConfigManager(
+            urdf_dir=Path(AERIAL_GYM_ROOT_DIR)/"../resources/robots/modular/training",
+            batch_size=self.num_envs
+        )
+        self.drone_configs = self.cfg_manager.get_random_batch()
         super().__init__(self.cfg, sim_params, physics_engine, sim_device, headless)
         self.root_tensor = self.gym.acquire_actor_root_state_tensor(self.sim)
 
@@ -68,19 +68,11 @@ class ModularAerialRobot(BaseTask):
             self.env_asset_root_states = self.vec_root_tensor[:, 1:, :]
             if self.get_privileged_obs:
                 self.privileged_obs_buf = self.env_asset_root_states
-                
 
         self.gym.refresh_actor_root_state_tensor(self.sim)
 
         self.initial_root_states = self.root_states.clone()
         self.counter = 0
-
-        # get batch of drone configs with config manager
-        base_config_path = "/home/guilherme/phd/aerial_gym_simulator/aerial_gym/envs/base/modular/base_config.yml"
-        urdf_dir = '/home/guilherme/phd/aerial_gym_simulator/resources/robots/modular/training'
-        self.config_manager = DroneConfigManager(urdf_dir, base_config_path, batch_size=self.num_envs)
-        self.drone_configs = self.cfg_manager.get_drone_configs()
-        self.max_action_space = 8
         # action limits
         self.action_upper_limits = torch.tensor(
             [1]*self.max_action_space, device=self.device, dtype=torch.float32)

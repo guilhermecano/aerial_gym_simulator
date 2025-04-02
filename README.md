@@ -220,6 +220,69 @@ cd aerial_gym/rl_training/rl_games
 python3 runner.py
 ```
 
+## 3. [Metamorph]()
+
+Implementation of metamorph for aerial modular drones.
+
+Explanation of the Pseudocode:
+
+- Tokenization: Each module of the robot is tokenized by combining its proprioceptive information with its morphological characteristics.
+
+- Position Embeddings: Learnable position embeddings are created to provide spatial context to the tokens.
+
+- Embedding Tokens: Each token is linearly embedded, and positional information is added to create module embeddings.
+
+- Transformer Encoding: The module embeddings are processed through a Transformer encoder to capture relationships between modules.
+
+- Combining Inputs: The output from the Transformer is combined with exteroceptive observations to form a comprehensive input for the decoder.
+
+- Decoder: The decoder generates the final control outputs for each joint based on the combined input.
+
+This pseudocode provides a high-level overview of the MetaMorph algorithm's structure and flow, focusing on the key components involved in learning and generating control policies for modular robots.
+
+```
+Algorithm: MetaMorph
+
+Input: 
+    - Robot Morphology (M) represented as a kinematic tree
+    - Proprioceptive observations (P)
+    - Exteroceptive observations (E)
+    - Number of modules (N)
+
+Output: 
+    - Control outputs for each joint (C)
+
+1. FUNCTION MetaMorph(M, P, E):
+2.     // Step 1: Tokenization
+3.     tokens = []  // Initialize an empty list for tokens
+4.     FOR each module in M:
+5.         token = CreateToken(module, P)  // Combine proprioceptive and morphology info
+6.         tokens.append(token)  // Add token to the list
+7.     END FOR
+
+8.     // Step 2: Create Position Embeddings
+9.     position_embeddings = LearnPositionEmbeddings(N)  // Learnable positional embeddings
+
+10.    // Step 3: Embed Tokens
+11.    module_embeddings = []  // Initialize embeddings
+12.    FOR each token in tokens:
+13.        embedding = LinearEmbed(token)  // Linear projection of the token
+14.        module_embeddings.append(embedding + position_embeddings[i])  // Add positional info
+15.    END FOR
+
+16.    // Step 4: Transformer Encoding
+17.    encoded_output = TransformerEncoder(module_embeddings)  // Process through Transformer
+
+18.    // Step 5: Combine with Exteroceptive Observations
+19.    combined_input = Concatenate(encoded_output, LinearEmbed(E))  // Combine with exteroceptive data
+
+20.    // Step 6: Decoder for Control Outputs
+21.    C = TransformerDecoder(combined_input)  // Generate control outputs for each joint
+
+22.    RETURN C  // Return the control outputs
+END FUNCTION
+```
+
 ![](docs/gifs/rl_games_training.gif)
 
 
@@ -235,9 +298,6 @@ python3 runner.py
 This material was supported by the AFOSR Award No. FA8655-21-1-7033.
 
 This repository shares some of the code and helper scripts from [https://github.com/leggedrobotics/legged_gym](https://github.com/leggedrobotics/legged_gym).
-
----
-
 
 ## Known issues
 

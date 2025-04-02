@@ -15,5 +15,6 @@ setup(
                       'torch',
                       'pytorch3d',
                       'pydantic',
+                      'urdfpy',
                       ]
 )
