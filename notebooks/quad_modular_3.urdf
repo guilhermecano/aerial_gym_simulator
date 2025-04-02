@@ -1,0 +1,259 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="quad_modular">
+  <link name="base_link_0">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+    <collision name="base_link_0_collision">
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="base_link_1">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+    <collision name="base_link_1_collision">
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="base_link_2">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+    <collision name="base_link_2_collision">
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="base_link_3">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+    <collision name="base_link_3_collision">
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="base_link_4">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+    <collision name="base_link_4_collision">
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="base_link_5">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.76"/>
+      <inertia ixx="0.00243" ixy="0.0" ixz="0.0" iyy="0.00243" iyz="0.0" izz="0.00243"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.025"/>
+      </geometry>
+      <material name="White"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+    <collision name="base_link_5_collision">
+      <geometry>
+        <sphere radius="0.08"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="propeller_link_1">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+  </link>
+  <link name="propeller_link_2">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+  </link>
+  <link name="propeller_link_3">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+  </link>
+  <link name="propeller_link_4">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+  </link>
+  <link name="propeller_link_5">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="Orange"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </visual>
+  </link>
+  <joint name="base_joint_0" type="fixed">
+    <parent link="base_link_0"/>
+    <child link="base_link_1"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 -0.16 -0.0475" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="base_joint_1" type="fixed">
+    <parent link="base_link_0"/>
+    <child link="base_link_2"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.16 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="base_joint_2" type="fixed">
+    <parent link="base_link_0"/>
+    <child link="base_link_3"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="-0.13856406460551018 -0.08 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="base_joint_3" type="fixed">
+    <parent link="base_link_3"/>
+    <child link="base_link_4"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="-0.13856406460551018 -0.08 -0.0475" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="base_joint_4" type="fixed">
+    <parent link="base_link_3"/>
+    <child link="base_link_5"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.16 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="propeller_joint_0" type="fixed">
+    <parent link="base_link_1"/>
+    <child link="propeller_link_1"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="propeller_joint_1" type="fixed">
+    <parent link="base_link_2"/>
+    <child link="propeller_link_2"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="propeller_joint_2" type="fixed">
+    <parent link="base_link_3"/>
+    <child link="propeller_link_3"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="propeller_joint_3" type="fixed">
+    <parent link="base_link_4"/>
+    <child link="propeller_link_4"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <joint name="propeller_joint_4" type="fixed">
+    <parent link="base_link_5"/>
+    <child link="propeller_link_5"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+  <material name="White">
+    <color rgba="1. 1. 1. 1."/>
+  </material>
+  <material name="Orange">
+    <color rgba="1.         0.423      0.03921569 1.        "/>
+  </material>
+</robot>
